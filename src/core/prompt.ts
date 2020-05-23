@@ -32,7 +32,7 @@ class Prompt {
   }
 
   private format(str: string): string {
-    return '\x1b[1m' + str + '\x1b[22m' + (this.default ? ` (${this.default}):` : '');
+    return '\x1b[1m' + str + '\x1b[22m' + (this.default ? ` (${this.default}):` : ':');
   }
 
   protected getPrompt(): string {
