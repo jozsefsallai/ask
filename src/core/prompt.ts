@@ -3,6 +3,7 @@ export interface PromptOpts {
   type?: string;
   message?: string;
   prefix?: string;
+  default?: string;
   input?: Deno.Reader & Deno.ReaderSync & Deno.Closer;
   output?: Deno.Writer & Deno.WriterSync & Deno.Closer;
 }
@@ -12,6 +13,7 @@ class Prompt {
   protected type?: string;
   protected message: string;
   protected prefix?: string;
+  protected default?: string;
   protected input: Deno.Reader & Deno.ReaderSync & Deno.Closer;
   protected output: Deno.Writer & Deno.WriterSync & Deno.Closer;
 
@@ -24,12 +26,13 @@ class Prompt {
     this.type = opts.type || 'text';
     this.message = opts.message || opts.name;
     this.prefix = opts.prefix || '\x1b[32m?\x1b[39m';
+    this.default = opts.default
     this.input = opts.input || Deno.stdin;
     this.output = opts.output || Deno.stdout;
   }
 
   private format(str: string): string {
-    return '\x1b[1m' + str + '\x1b[22m';
+    return '\x1b[1m' + str + '\x1b[22m' + (this.default ? ` (${this.default}):` : '');
   }
 
   protected getPrompt(): string {

@@ -18,7 +18,8 @@ class Text extends Prompt {
 
     try {
       const input = await reader.readLine();
-      return input?.line && new TextDecoder().decode(input.line);
+      const result = input?.line && new TextDecoder().decode(input.line)
+      return result || this.default || result;
     } catch (err) {
       throw err;
     }
