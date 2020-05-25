@@ -73,7 +73,9 @@ These options are available for all question types.
 - `name` **(string, required)** - the name of the key in the returned object file that will contain the response to the question
 - `type` **(string)** - one of the supported types, defaults to `"input"`
 - `message` **(string)** - the message that will be displayed in the prompt. If not provided, the value of the `name` option will be displayed.
+- `default` **(string)** - the default value that will be applied if the user doesn't input anything.
 - `prefix` **(string)** - the prefix that will be displayed before the question. Defaults to a green question mark.
+- `suffix` **(string)** - the suffix that will be displayed after the question. If no `message` is provided, the suffix will be a colon (`:`), unless `suffix: ''` is passed. If a message is provided, the suffix will be an empty string.
 - `input` **(Deno.Reader & Deno.ReaderSync & Deno.Closer)** - the input buffer to accept answers. Defaults to `Deno.stdin`.
 - `output` **(Deno.Writer & Deno.WriterSync & Deno.Closer)** - the output buffer used to display the questions. Defaults to `Deno.stdout`.
 
