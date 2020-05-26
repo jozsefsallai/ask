@@ -10,6 +10,10 @@ class Text extends Prompt {
     return new BufReader(this.input);
   }
 
+  protected async printError(msg: string) {
+    await this.output.write(new TextEncoder().encode(`\x1b[31m>>\x1b[0m ${msg}\n`));
+  }
+
   protected async question(): Promise<string | undefined> {
     const reader = this.getReader();
     const prompt = new TextEncoder().encode(this.getPrompt());
@@ -18,7 +22,21 @@ class Text extends Prompt {
 
     try {
       const input = await reader.readLine();
-      const result = input?.line && new TextDecoder().decode(input.line)
+      const result = input?.line && new TextDecoder().decode(input.line);
+      let pass = true;
+
+      try {
+        pass = await Promise.resolve(this.validate(result));
+      }
+      catch (e) {
+        pass = false;
+        await this.printError(typeof e === 'string' ? e : e.message);
+      }
+
+      if (!pass) {
+        return this.question();
+      }
+
       return result || this.default || result;
     } catch (err) {
       throw err;
