@@ -7,6 +7,7 @@ export interface PromptOpts {
   default?: string;
   input?: Deno.Reader & Deno.ReaderSync & Deno.Closer;
   output?: Deno.Writer & Deno.WriterSync & Deno.Closer;
+  validate?: (val?: any) => Promise<boolean> | boolean;
 }
 
 class Prompt {
@@ -18,6 +19,7 @@ class Prompt {
   protected default?: string;
   protected input: Deno.Reader & Deno.ReaderSync & Deno.Closer;
   protected output: Deno.Writer & Deno.WriterSync & Deno.Closer;
+  protected validate: (val?: any) => Promise<boolean> | boolean;
 
   constructor(opts: PromptOpts) {
     if (!opts.name || opts.name.trim().length === 0) {
@@ -32,6 +34,7 @@ class Prompt {
     this.default = opts.default
     this.input = opts.input || Deno.stdin;
     this.output = opts.output || Deno.stdout;
+    this.validate = opts.validate || (() => true)
   }
 
   private format(str: string): string {
