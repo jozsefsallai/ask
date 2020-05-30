@@ -22,8 +22,10 @@ class Text extends Prompt {
 
     try {
       const input = await reader.readLine();
-      const result = input?.line && new TextDecoder().decode(input.line);
+      let result = input?.line && new TextDecoder().decode(input.line);
       let pass = true;
+
+      result = result || this.default || result;
 
       try {
         pass = await Promise.resolve(this.validate(result));
@@ -37,7 +39,7 @@ class Text extends Prompt {
         return this.question();
       }
 
-      return result || this.default || result;
+      return result;
     } catch (err) {
       throw err;
     }
