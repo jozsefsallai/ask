@@ -10,6 +10,13 @@ export interface PromptOpts {
   validate?: (val?: any) => Promise<boolean> | boolean;
 }
 
+export interface GlobalPromptOpts {
+  prefix?: string;
+  suffix?: string;
+  input?: Deno.Reader & Deno.ReaderSync & Deno.Closer;
+  output?: Deno.Writer & Deno.WriterSync & Deno.Closer;
+}
+
 class Prompt {
   protected name: string;
   protected type?: string;
@@ -30,11 +37,11 @@ class Prompt {
     this.type = opts.type || 'text';
     this.message = opts.message || opts.name;
     this.prefix = opts.prefix || '\x1b[32m?\x1b[39m';
-    this.suffix = opts.suffix || (!opts.message && opts.suffix == null ? ':' : '')
-    this.default = opts.default
+    this.suffix = opts.suffix || (!opts.message && opts.suffix == null ? ':' : '');
+    this.default = opts.default;
     this.input = opts.input || Deno.stdin;
     this.output = opts.output || Deno.stdout;
-    this.validate = opts.validate || (() => true)
+    this.validate = opts.validate || (() => true);
   }
 
   private format(str: string): string {

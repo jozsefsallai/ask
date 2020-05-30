@@ -9,6 +9,7 @@ Interactive command-line prompts for Deno.
 - [Basic Usage](#basic-usage)
 - [Options](#options)
   - [General Options](#general-options)
+  - [Global Options](#global-options)
   - [Confirm](#confirm)
   - [Number](#number)
 - [TODOs](#todos)
@@ -33,7 +34,7 @@ It's very easy to get started. Just create an `Ask` instance and use the `prompt
 ```ts
 import Ask from 'https://deno.land/x/ask/mod.ts';
 
-const ask = new Ask();
+const ask = new Ask(); // global options are also supported! (see below)
 
 const answers = await ask.prompt([
   {
@@ -74,8 +75,46 @@ These options are available for all question types.
 - `type` **(string)** - one of the supported types, defaults to `"input"`
 - `message` **(string)** - the message that will be displayed in the prompt. If not provided, the value of the `name` option will be displayed.
 - `prefix` **(string)** - the prefix that will be displayed before the question. Defaults to a green question mark.
+- `suffix` **(string)** - the suffix that will be displayed after the question. If no `message` is provided, it defaults to a colon `:`. Otherwise it defaults to an empty string.
 - `input` **(Deno.Reader & Deno.ReaderSync & Deno.Closer)** - the input buffer to accept answers. Defaults to `Deno.stdin`.
 - `output` **(Deno.Writer & Deno.WriterSync & Deno.Closer)** - the output buffer used to display the questions. Defaults to `Deno.stdout`.
+- `validate` **(val?: any) => Promise<boolean> | boolean** - a function that can be used to validate the user input. Defaults to a function that always returns `true`.
+
+### Global Options
+
+These options will apply to every prompt in a given `Ask` instance, unless overwritten:
+
+- `prefix` **(string)**
+- `suffix` **(string)**
+- `input` **(Deno.Reader & Deno.ReaderSync & Deno.Closer)**
+- `output` **(Deno.Writer & Deno.WriterSync & Deno.Closer)**
+
+**Example:**
+
+```ts
+import Ask from 'https://deno.land/x/ask';
+
+const ask = new Ask({
+  prefix: '>'
+});
+
+const answers = await ask.prompt([
+  {
+    name: 'name',
+    message: 'Your name:',
+    type: 'input'
+  },
+  {
+    name: 'age',
+    message: 'Your age:',
+    type: 'number',
+    prefix: '?'
+  }
+]);
+
+// > Your name:
+// ? Your age:
+```
 
 ### Confirm
 
@@ -107,11 +146,11 @@ Right now, this behavior is not configurable, but if there's popular demand for 
 
 ## TODOs
 
-- Global configuration
-- `hidden` type
-- `masked` type
-- `list` type
-- Unit tests
+- [x] Global configuration
+- [ ] `hidden` type
+- [ ] `masked` type
+- [ ] `list` type
+- [ ] Unit tests
 
 ## License
 
