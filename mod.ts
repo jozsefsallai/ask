@@ -12,23 +12,20 @@ class Ask {
     this.opts = opts || {};
   }
 
-  private parseOptions(opts: PromptOpts | NumberOpts | ConfirmOpts) {
-    this.opts = { ...this.opts, ...opts };
+  private mergeOptions(opts: PromptOpts | NumberOpts | ConfirmOpts) {
+    return { ...this.opts, ...opts };
   }
 
   async input(opts: PromptOpts): Promise<Result> {
-    this.parseOptions(opts);
-    return new Input(this.opts as PromptOpts).run();
+    return new Input(this.mergeOptions(opts) as PromptOpts).run();
   }
 
   async number(opts: NumberOpts): Promise<Result> {
-    this.parseOptions(opts);
-    return new Number(this.opts as NumberOpts).run();
+    return new Number(this.mergeOptions(opts) as NumberOpts).run();
   }
 
   async confirm(opts: ConfirmOpts): Promise<Result> {
-    this.parseOptions(opts);
-    return new Confirm(this.opts as ConfirmOpts).run();
+    return new Confirm(this.mergeOptions(opts) as ConfirmOpts).run();
   }
 
   async prompt(questions: PromptOpts[] | ConfirmOpts[] | NumberOpts[]): Promise<Result> {
