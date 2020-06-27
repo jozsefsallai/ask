@@ -34,14 +34,14 @@ class Prompt {
     }
 
     this.name = opts.name;
-    this.type = opts.type || 'text';
-    this.message = opts.message || opts.name;
-    this.prefix = opts.prefix || '\x1b[32m?\x1b[39m';
-    this.suffix = opts.suffix || (!opts.message && opts.suffix == null ? ':' : '');
+    this.type = opts.type ?? 'text';
+    this.message = opts.message ?? opts.name;
+    this.prefix = opts.prefix ?? '\x1b[32m?\x1b[39m';  // Green "?"
+    this.suffix = opts.suffix ?? (!opts.message && opts.suffix == null ? ':' : '');
     this.default = opts.default;
-    this.input = opts.input || Deno.stdin;
-    this.output = opts.output || Deno.stdout;
-    this.validate = opts.validate || (() => true);
+    this.input = opts.input ?? Deno.stdin;
+    this.output = opts.output ?? Deno.stdout;
+    this.validate = opts.validate ?? (() => true);
   }
 
   private format(str: string): string {
