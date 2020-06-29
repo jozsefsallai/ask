@@ -28,7 +28,7 @@ class Ask {
     return new Confirm(this.mergeOptions(opts) as ConfirmOpts).run();
   }
 
-  async prompt(questions: PromptOpts[] | ConfirmOpts[] | NumberOpts[]): Promise<Result> {
+  async prompt(questions: Array<PromptOpts | ConfirmOpts | NumberOpts>): Promise<Result> {
     const answers = {};
     let cache: PromptOpts;
 
