@@ -14,8 +14,8 @@ class Number extends Text {
   constructor(opts: NumberOpts) {
     super(opts);
 
-    this.min = opts.min || -Infinity;
-    this.max = opts.max || Infinity;
+    this.min = opts.min === void 1 ? -Infinity : opts.min;
+    this.max = opts.max === void 1 ? Infinity : opts.max;
 
     this.message = this.messageWithRange;
   }
