@@ -1,5 +1,5 @@
 import Prompt, { PromptOpts } from './prompt.ts';
-import { BufReader } from 'https://deno.land/std@0.51.0/io/bufio.ts';
+import { BufReader } from 'https://deno.land/std@0.61.0/io/bufio.ts';
 
 class Text extends Prompt {
   constructor(opts: PromptOpts) {
