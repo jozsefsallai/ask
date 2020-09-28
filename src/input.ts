@@ -1,6 +1,6 @@
 import Text from './core/text.ts';
-import { PromptOpts } from './core/prompt.ts';
-import { Result } from './core/result.ts';
+import type { PromptOpts } from './core/prompt.ts';
+import type { Result } from './core/result.ts';
 
 class Input extends Text {
   constructor(opts: PromptOpts) {
