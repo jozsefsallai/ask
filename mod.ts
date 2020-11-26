@@ -1,5 +1,5 @@
-import { PromptOpts, GlobalPromptOpts } from './src/core/prompt.ts';
-import { Result } from './src/core/result.ts';
+import type { PromptOpts, GlobalPromptOpts } from './src/core/prompt.ts';
+import type { Result } from './src/core/result.ts';
 
 import Input from './src/input.ts';
 import Number, { NumberOpts } from './src/number.ts';
