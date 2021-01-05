@@ -34,7 +34,7 @@ class Prompt {
     }
 
     this.name = opts.name;
-    this.type = opts.type ?? 'text';
+    this.type = opts.type ?? 'input';
     this.message = opts.message ?? opts.name;
     this.prefix = opts.prefix ?? '\x1b[32m?\x1b[39m';  // Green "?"
     this.suffix = opts.suffix ?? (!opts.message && opts.suffix == null ? ':' : '');
