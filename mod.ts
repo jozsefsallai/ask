@@ -36,10 +36,6 @@ class Ask {
       cache = questions[i];
 
       switch (cache.type) {
-        case 'input':
-          Object.assign(answers, await this.input(cache));
-          break;
-
         case 'number':
           Object.assign(answers, await this.number(cache));
           break;
@@ -49,6 +45,7 @@ class Ask {
           break;
 
         default:
+          Object.assign(answers, await this.input(cache));
           break;
       }
     }
