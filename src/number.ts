@@ -3,6 +3,7 @@ import type { PromptOpts } from './core/prompt.ts';
 import type { Result } from './core/result.ts';
 
 export interface NumberOpts extends PromptOpts {
+  type: 'number';
   min?: number;
   max?: number;
 }
