@@ -1,6 +1,8 @@
+export type PromptType = 'input' | 'number' | 'confirm';
+
 export interface PromptOpts {
   name: string;
-  type?: string;
+  type?: PromptType;
   message?: string;
   prefix?: string;
   suffix?: string;
@@ -19,7 +21,7 @@ export interface GlobalPromptOpts {
 
 class Prompt {
   protected name: string;
-  protected type?: string;
+  protected type?: PromptType;
   protected message: string;
   protected prefix?: string;
   protected suffix?: string;
