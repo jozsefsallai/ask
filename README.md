@@ -17,8 +17,8 @@ Interactive command-line prompts for Deno.
 
 ## Description
 
-`ask` is a slick and dependency-free Deno module that allows you to create
-interactive command-line applications, similar to what you'd achieve with
+`ask` is a slick Deno module that allows you to create interactive command-line
+applications, similar to what you'd achieve with
 [inquirer](https://www.npmjs.com/package/inquirer) in Node.js. **Right now this
 module is very early in development**, so please don't expect it to support
 everything inquirer does.
@@ -30,7 +30,6 @@ everything inquirer does.
 - Elegant output
 - Familiar, inquirer-like syntax
 - Easily configurable
-- Dependency-free
 
 ## Basic Usage
 
