@@ -1,4 +1,6 @@
-export type PromptType = 'input' | 'number' | 'confirm';
+import iro, { bold, green } from "https://deno.land/x/iro@1.0.3/mod.ts";
+
+export type PromptType = "input" | "number" | "confirm";
 
 export interface PromptOpts {
   name: string;
@@ -9,7 +11,7 @@ export interface PromptOpts {
   default?: string;
   input?: Deno.Reader & Deno.ReaderSync & Deno.Closer;
   output?: Deno.Writer & Deno.WriterSync & Deno.Closer;
-  validate?: (val?: any) => Promise<boolean> | boolean;
+  validate?: (val?: string) => Promise<boolean> | boolean;
 }
 
 export interface GlobalPromptOpts {
@@ -28,18 +30,19 @@ class Prompt {
   protected default?: string;
   protected input: Deno.Reader & Deno.ReaderSync & Deno.Closer;
   protected output: Deno.Writer & Deno.WriterSync & Deno.Closer;
-  protected validate: (val?: any) => Promise<boolean> | boolean;
+  protected validate: (val?: string) => Promise<boolean> | boolean;
 
   constructor(opts: PromptOpts) {
     if (!opts.name || opts.name.trim().length === 0) {
-      throw new Error('Please provide the name of the prompt.');
+      throw new Error("Please provide the name of the prompt.");
     }
 
     this.name = opts.name;
-    this.type = opts.type ?? 'input';
+    this.type = opts.type ?? "input";
     this.message = opts.message ?? opts.name;
-    this.prefix = opts.prefix ?? '\x1b[32m?\x1b[39m';  // Green "?"
-    this.suffix = opts.suffix ?? (!opts.message && opts.suffix == null ? ':' : '');
+    this.prefix = opts.prefix ?? iro("?", green);
+    this.suffix = opts.suffix ??
+      (!opts.message && opts.suffix === null ? ":" : "");
     this.default = opts.default;
     this.input = opts.input ?? Deno.stdin;
     this.output = opts.output ?? Deno.stdout;
@@ -47,7 +50,8 @@ class Prompt {
   }
 
   private format(str: string): string {
-    return '\x1b[1m' + str + '\x1b[22m' + (this.default ? ` (${this.default})` : '') + this.suffix;
+    return iro(str, bold) + (this.default ? ` (${this.default})` : "") +
+      this.suffix;
   }
 
   protected getPrompt(): string {
@@ -58,8 +62,9 @@ class Prompt {
     }
 
     components.push(this.format(this.message));
+    components.push("");
 
-    return components.join(' ') + ' ';
+    return components.join(" ");
   }
 }
 

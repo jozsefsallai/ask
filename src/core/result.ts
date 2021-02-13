@@ -1,3 +1,3 @@
-export interface Result {
-  [key: string]: any
+export interface Result<T> {
+  [key: string]: T;
 }
