@@ -1,6 +1,8 @@
+export type PromptType = 'input' | 'number' | 'confirm';
+
 export interface PromptOpts {
   name: string;
-  type?: string;
+  type?: PromptType;
   message?: string;
   prefix?: string;
   suffix?: string;
@@ -19,7 +21,7 @@ export interface GlobalPromptOpts {
 
 class Prompt {
   protected name: string;
-  protected type?: string;
+  protected type?: PromptType;
   protected message: string;
   protected prefix?: string;
   protected suffix?: string;
@@ -34,7 +36,7 @@ class Prompt {
     }
 
     this.name = opts.name;
-    this.type = opts.type ?? 'text';
+    this.type = opts.type ?? 'input';
     this.message = opts.message ?? opts.name;
     this.prefix = opts.prefix ?? '\x1b[32m?\x1b[39m';  // Green "?"
     this.suffix = opts.suffix ?? (!opts.message && opts.suffix == null ? ':' : '');
