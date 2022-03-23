@@ -107,7 +107,7 @@ overwritten:
 **Example:**
 
 ```ts
-import Ask from "https://deno.land/x/ask";
+import Ask from "https://deno.land/x/ask/mod.ts";
 
 const ask = new Ask({
   prefix: ">",
