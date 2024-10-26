@@ -1,0 +1,14 @@
+{
+  "name": "@sallai/ask",
+  "version": "2.0.0",
+  "exports": {
+    ".": "./mod.ts"
+  },
+  "tasks": {
+    "dev": "deno run --watch main.ts"
+  },
+  "imports": {
+    "@sallai/iro": "jsr:@sallai/iro@^1.0.3",
+    "@std/io": "jsr:@std/io@^0.225.0"
+  }
+}
