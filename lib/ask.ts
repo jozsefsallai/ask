@@ -66,7 +66,9 @@ export class Ask {
    *
    * console.log(name);
    */
-  input<T extends InputOpts>(opts: Omit<T, "type">) {
+  input<T extends InputOpts>(
+    opts: Omit<T, "type">
+  ): Promise<Result<T, string | undefined>> {
     return new InputPrompt(
       this.mergeOptions({
         ...opts,
@@ -97,7 +99,9 @@ export class Ask {
    *
    * console.log(age);
    */
-  number<T extends NumberOpts>(opts: Omit<T, "type">) {
+  number<T extends NumberOpts>(
+    opts: Omit<T, "type">
+  ): Promise<Result<T, number | undefined>> {
     return new NumberPrompt(
       this.mergeOptions({
         ...opts,
@@ -127,7 +131,9 @@ export class Ask {
    *
    * console.log(canDrive);
    */
-  confirm<T extends ConfirmOpts>(opts: Omit<T, "type">) {
+  confirm<T extends ConfirmOpts>(
+    opts: Omit<T, "type">
+  ): Promise<Result<T, boolean | undefined>> {
     return new ConfirmPrompt(
       this.mergeOptions({
         ...opts,
@@ -158,7 +164,9 @@ export class Ask {
    *
    * console.log(password);
    */
-  password<T extends PasswordOpts>(opts: Omit<T, "type">) {
+  password<T extends PasswordOpts>(
+    opts: Omit<T, "type">
+  ): Promise<Result<T, string | undefined>> {
     return new PasswordPrompt(
       this.mergeOptions({
         ...opts,
@@ -204,7 +212,9 @@ export class Ask {
    * console.log(answers.age); // will be a number
    * console.log(answers.canDrive); // will be a boolean
    */
-  async prompt<T extends Array<SupportedOpts>>(questions: T) {
+  async prompt<T extends Array<SupportedOpts>>(
+    questions: T
+  ): Promise<PromptResultMap<T>> {
     // deno-lint-ignore no-explicit-any
     const answers: PromptResultMap<any> = {};
 
