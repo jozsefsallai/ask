@@ -1,9 +1,23 @@
 import iro, { cyan, gray } from "@sallai/iro";
 import type { Reader, Closer, ReaderSync, Writer, WriterSync } from "@std/io";
 
+/**
+ * A single choice in a list.
+ */
 export type Choice<T> = {
+  /**
+   * The text that will be displayed as the choice in the terminal UI.
+   */
   message: string;
+
+  /**
+   * The value that will be returned when the choice is selected.
+   */
   value?: T;
+
+  /**
+   * Whether the choice is disabled. A disabled choice can never be selected.
+   */
   disabled?: boolean;
 };
 
@@ -64,6 +78,14 @@ export class ListItem {
   }
 }
 
+/**
+ * A separator in a list. You can use this to visually separate groups of items
+ * in a list. The separator is always disabled and cannot be selected.
+ *
+ * You can change the message of the separator by passing a string to the
+ * constructor. If you don't pass a message, the separator will be a line of
+ * 16 dashes.
+ */
 export class Separator extends ListItem {
   constructor(message?: string) {
     super({
