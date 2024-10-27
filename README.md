@@ -10,8 +10,12 @@ applications, similar to what you'd achieve with
 
 ## Overview
 
-- **Supported prompts:** input (text), confirm (yes/no response), number,
-  password (hidden/masked input).
+- **Supported prompts:**
+  - `input` (plain text)
+  - `number` (integer or float)
+  - `password` (hidden/masked input)
+  - `confirm` (yes/no)
+  - `editor` (open an editor to write longer text)
 - Elegant output.
 - Familiar, inquirer-like syntax.
 - Easily configurable.
