@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import iro, { gray, italic } from "@sallai/iro";
 import {
   ListItem,
@@ -7,39 +8,45 @@ import {
 } from "../internal/list-io.ts";
 import { Prompt, type PromptOpts } from "./base.ts";
 
-export type ListOpts<T> = PromptOpts<T> & {
-  choices: Choice<T>[];
+export type ListOpts = PromptOpts<any> & {
+  choices: Choice[];
   multiple?: boolean;
+  selectedPrefix?: string;
+  unselectedPrefix?: string;
   inactiveFormatter?: (message: string) => string;
   activeFormatter?: (message: string) => string;
   disabledFormatter?: (message: string) => string;
 };
 
-export class ListPrompt<T> extends Prompt<T> {
-  private choices: Choice<T>[];
+export class ListPrompt extends Prompt<any> {
+  private choices: Choice[];
   private inactiveFormatter?: (message: string) => string;
   private activeFormatter?: (message: string) => string;
   private disabledFormatter?: (message: string) => string;
   private multiple?: boolean;
+  private selectedPrefix: string;
+  private unselectedPrefix: string;
 
-  private _selected: number = 0;
+  private _active: number = 0;
   private _items: ListItem[];
   private _running: boolean = true;
 
-  constructor(opts: ListOpts<T>) {
+  constructor(opts: ListOpts) {
     super(opts);
     this.choices = opts.choices;
     this.inactiveFormatter = opts.inactiveFormatter;
     this.activeFormatter = opts.activeFormatter;
     this.disabledFormatter = opts.disabledFormatter;
     this.multiple = opts.multiple;
+    this.selectedPrefix = opts.selectedPrefix ?? "";
+    this.unselectedPrefix = opts.unselectedPrefix ?? "";
 
     if (this.default) {
       const indexOfDefault = this.choices.findIndex(
         (choice) => choice.value === this.default
       );
       if (indexOfDefault >= 0) {
-        this._selected = indexOfDefault;
+        this._active = indexOfDefault;
       }
     }
 
@@ -51,7 +58,10 @@ export class ListPrompt<T> extends Prompt<T> {
       return new ListItem({
         message: choice.message,
         disabled: choice.disabled ?? false,
-        selected: idx === this._selected,
+        active: idx === this._active,
+        selected: false,
+        selectedPrefix: this.selectedPrefix,
+        unselectedPrefix: this.unselectedPrefix,
         inactiveFormatter: this.inactiveFormatter,
         activeFormatter: this.activeFormatter,
         disabledFormatter: this.disabledFormatter,
@@ -60,41 +70,41 @@ export class ListPrompt<T> extends Prompt<T> {
   }
 
   private up(startIndex: number) {
-    this._items[this._selected].selected = false;
+    this._items[this._active].active = false;
 
-    if (this._selected === 0) {
-      this._selected = this.choices.length - 1;
+    if (this._active === 0) {
+      this._active = this.choices.length - 1;
     } else {
-      this._selected--;
+      this._active--;
     }
 
-    this._items[this._selected].selected = true;
+    this._items[this._active].active = true;
 
-    if (this._selected === startIndex) {
+    if (this._active === startIndex) {
       return;
     }
 
-    if (this._items[this._selected].disabled) {
+    if (this._items[this._active].disabled) {
       this.up(startIndex);
     }
   }
 
   private down(startIndex: number) {
-    this._items[this._selected].selected = false;
+    this._items[this._active].active = false;
 
-    if (this._selected === this.choices.length - 1) {
-      this._selected = 0;
+    if (this._active === this.choices.length - 1) {
+      this._active = 0;
     } else {
-      this._selected++;
+      this._active++;
     }
 
-    this._items[this._selected].selected = true;
+    this._items[this._active].active = true;
 
-    if (this._selected === startIndex) {
+    if (this._active === startIndex) {
       return;
     }
 
-    if (this._items[this._selected].disabled) {
+    if (this._items[this._active].disabled) {
       this.down(startIndex);
     }
   }
@@ -108,11 +118,20 @@ export class ListPrompt<T> extends Prompt<T> {
       return;
     }
 
-    this._items[this._selected].selected =
-      !this._items[this._selected].selected;
+    this._items[this._active].selected = !this._items[this._active].selected;
   }
 
-  protected async questionMultiple(): Promise<(T | undefined)[] | undefined> {
+  private enter() {
+    if (this.multiple) {
+      this.finish();
+      return;
+    }
+
+    this._items[this._active].selected = true;
+    this.finish();
+  }
+
+  protected async questionMultiple(): Promise<any[] | undefined> {
     const prompt = new TextEncoder().encode(this.getPrompt());
     await this.output.write(prompt);
     await this.output.write(new TextEncoder().encode("\n"));
@@ -127,10 +146,10 @@ export class ListPrompt<T> extends Prompt<T> {
         output: this.output,
         items: this._items,
 
-        onEnter: this.finish.bind(this),
+        onEnter: this.enter.bind(this),
         onSpace: this.select.bind(this),
-        onUp: () => this.up(this._selected),
-        onDown: () => this.down(this._selected),
+        onUp: () => this.up(this._active),
+        onDown: () => this.down(this._active),
       });
     }
 
@@ -170,7 +189,7 @@ export class ListPrompt<T> extends Prompt<T> {
     );
   }
 
-  async questionSingle(): Promise<T | undefined> {
+  async questionSingle(): Promise<any> {
     const result = await this.questionMultiple();
     return result?.[0];
   }

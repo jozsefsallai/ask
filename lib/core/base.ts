@@ -10,7 +10,8 @@ export type PromptType =
   | "confirm"
   | "password"
   | "editor"
-  | "select";
+  | "select"
+  | "checkbox";
 
 /**
  * The global options that can be passed to an `Ask` instance.

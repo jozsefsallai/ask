@@ -6,8 +6,8 @@ import { NumberPrompt, type NumberOpts } from "./handlers/number.ts";
 import { ConfirmPrompt, type ConfirmOpts } from "./handlers/confirm.ts";
 import { PasswordPrompt, type PasswordOpts } from "./handlers/password.ts";
 import { EditorPrompt, type EditorOpts } from "./handlers/editor.ts";
-import type { SelectOpts } from "./handlers/select.ts";
-import { SelectPrompt } from "../mod.ts";
+import { SelectPrompt, type SelectOpts } from "./handlers/select.ts";
+import { CheckboxPrompt, type CheckboxOpts } from "./handlers/checkbox.ts";
 
 type SupportedOpts =
   | InputOpts
@@ -15,7 +15,8 @@ type SupportedOpts =
   | ConfirmOpts
   | PasswordOpts
   | EditorOpts
-  | SelectOpts;
+  | SelectOpts
+  | CheckboxOpts;
 
 type PromptResult<O extends SupportedOpts> = O["type"] extends "input"
   ? Result<O extends InputOpts ? O : never, string>
@@ -28,7 +29,11 @@ type PromptResult<O extends SupportedOpts> = O["type"] extends "input"
   : O["type"] extends "editor"
   ? Result<O extends EditorOpts ? O : never, string>
   : O["type"] extends "select"
-  ? Result<O extends SelectOpts ? O : never, string>
+  ? // deno-lint-ignore no-explicit-any
+    Result<O extends SelectOpts ? O : never, any>
+  : O["type"] extends "checkbox"
+  ? // deno-lint-ignore no-explicit-any
+    Result<O extends CheckboxOpts ? O : never, any[]>
   : never;
 
 type PromptResultMap<T extends Array<SupportedOpts>> = {
@@ -224,10 +229,44 @@ export class Ask {
    * console.log(topping);
    * ```
    */
-  select<T extends SelectOpts<TT>, TT extends string>(
-    opts: T
-  ): Promise<Result<T, string | undefined>> {
+  // deno-lint-ignore no-explicit-any
+  select<T extends SelectOpts>(opts: T): Promise<Result<T, any>> {
     return new SelectPrompt(this.mergeOptions(opts) as T).run();
+  }
+
+  /**
+   * Will display a list of choices to the user. The user can select several of
+   * choices by using the `up` and `down` arrow keys. The user can mark an
+   * option as selected by pressing the `space` key and can finalize their
+   * selections using the `enter` key. The selected choices will be returned as
+   * as an object. You can also provide a function that can override the way the
+   * choices are displayed based on their status (active, inactive, disabled),
+   * as well as prefixes for selected and unselected choices. You can also use
+   * the `Separator` class to add a separator between choices.
+   * @param opts
+   * @example
+   * ```ts
+   * import { Ask, Separator } from "@sallai/ask";
+   *
+   * const ask = new Ask();
+   *
+   * const { toppings } = await ask.checkbox({
+   *   name: "toppings",
+   *   message: "Select pizza toppings:",
+   *   choices: [
+   *     { message: "Pepperoni", value: "pepperoni" },
+   *     { message: "Mushrooms", value: "mushrooms" },
+   *     new Separator(),
+   *     { message: "Pineapple", value: "pineapple" },
+   *   ],
+   * } as const);
+   *
+   * console.log(toppings);
+   * ```
+   */
+  // deno-lint-ignore no-explicit-any
+  checkbox<T extends CheckboxOpts>(opts: T): Promise<Result<T, any[]>> {
+    return new CheckboxPrompt(this.mergeOptions(opts) as CheckboxOpts).run();
   }
 
   /**
@@ -305,6 +344,11 @@ export class Ask {
         case "select": {
           const select = new SelectPrompt(question as SelectOpts);
           Object.assign(answers, await select.run());
+          break;
+        }
+        case "checkbox": {
+          const checkbox = new CheckboxPrompt(question as CheckboxOpts);
+          Object.assign(answers, await checkbox.run());
           break;
         }
       }

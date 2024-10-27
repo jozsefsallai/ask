@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import type { PromptOpts } from "../core/base.ts";
 import { ListPrompt } from "../core/list.ts";
 import type { Result } from "../core/result.ts";
@@ -6,7 +7,7 @@ import type { Choice } from "../internal/list-io.ts";
 /**
  * Options for the select prompt.
  */
-export type SelectOpts<T = string> = PromptOpts<T> & {
+export type SelectOpts = PromptOpts<any> & {
   /**
    * The type of the prompt. This can not be changed but will be used to
    * determine the type of the question.
@@ -16,7 +17,7 @@ export type SelectOpts<T = string> = PromptOpts<T> & {
   /**
    * A list of choices for the user to select from.
    */
-  choices: Choice<T>[];
+  choices: Choice[];
 
   /**
    * A function that can override the way an inactive (non-selected) choice is
@@ -46,11 +47,8 @@ export type SelectOpts<T = string> = PromptOpts<T> & {
  * A prompt for a select list which allows users to select one of the provided
  * choices.
  */
-export class SelectPrompt<
-  T extends SelectOpts<TT>,
-  TT = string
-> extends ListPrompt<TT> {
-  constructor(opts: SelectOpts<TT>) {
+export class SelectPrompt<T extends SelectOpts> extends ListPrompt {
+  constructor(opts: SelectOpts) {
     super(opts);
     this.type = "select";
   }
@@ -61,12 +59,12 @@ export class SelectPrompt<
    * selection by pressing the `enter` key. The selected choice will be returned
    * as an object.
    */
-  async run(): Promise<Result<T, TT | undefined>> {
+  async run(): Promise<Result<T, any>> {
     const answer = await this.questionSingle();
 
     const result = {
       [this.name]: answer,
-    } as Result<T, TT | undefined>;
+    } as Result<T, any>;
 
     return result;
   }

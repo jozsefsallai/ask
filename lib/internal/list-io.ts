@@ -4,7 +4,7 @@ import type { Reader, Closer, ReaderSync, Writer, WriterSync } from "@std/io";
 /**
  * A single choice in a list.
  */
-export type Choice<T> = {
+export type Choice = {
   /**
    * The text that will be displayed as the choice in the terminal UI.
    */
@@ -13,7 +13,8 @@ export type Choice<T> = {
   /**
    * The value that will be returned when the choice is selected.
    */
-  value?: T;
+  // deno-lint-ignore no-explicit-any
+  value?: any;
 
   /**
    * Whether the choice is disabled. A disabled choice can never be selected.
@@ -25,6 +26,10 @@ export class ListItem {
   message: string;
   disabled: boolean;
   selected: boolean;
+  active: boolean;
+
+  selectedPrefix: string = "";
+  unselectedPrefix: string = "";
 
   inactiveFormatter: (message: string) => string;
   activeFormatter: (message: string) => string;
@@ -34,6 +39,9 @@ export class ListItem {
     message,
     disabled,
     selected,
+    active,
+    selectedPrefix,
+    unselectedPrefix,
     inactiveFormatter,
     activeFormatter,
     disabledFormatter,
@@ -41,6 +49,9 @@ export class ListItem {
     message: string;
     disabled: boolean;
     selected: boolean;
+    active: boolean;
+    selectedPrefix?: string;
+    unselectedPrefix?: string;
     inactiveFormatter?: (message: string) => string;
     activeFormatter?: (message: string) => string;
     disabledFormatter?: (message: string) => string;
@@ -48,9 +59,23 @@ export class ListItem {
     this.message = message;
     this.disabled = disabled;
     this.selected = selected;
+    this.active = active;
     this.inactiveFormatter = inactiveFormatter ?? this.defaultInactiveFormatter;
     this.activeFormatter = activeFormatter ?? this.defaultActiveFormatter;
     this.disabledFormatter = disabledFormatter ?? this.defaultDisabledFormatter;
+
+    if (selectedPrefix) {
+      this.selectedPrefix = selectedPrefix;
+    }
+
+    if (unselectedPrefix) {
+      this.unselectedPrefix = unselectedPrefix;
+    }
+  }
+
+  get fullMessage(): string {
+    const prefix = this.selected ? this.selectedPrefix : this.unselectedPrefix;
+    return prefix + this.message;
   }
 
   protected defaultInactiveFormatter(message: string): string {
@@ -67,14 +92,14 @@ export class ListItem {
 
   format() {
     if (this.disabled) {
-      return this.disabledFormatter(this.message);
+      return this.disabledFormatter(this.fullMessage);
     }
 
-    if (this.selected) {
-      return this.activeFormatter(this.message);
+    if (this.active) {
+      return this.activeFormatter(this.fullMessage);
     }
 
-    return this.inactiveFormatter(this.message);
+    return this.inactiveFormatter(this.fullMessage);
   }
 }
 
@@ -92,6 +117,7 @@ export class Separator extends ListItem {
       message: message ?? iro(" " + "-".repeat(16), gray),
       disabled: true,
       selected: false,
+      active: false,
       disabledFormatter: (message: string) => message,
     });
   }
