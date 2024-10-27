@@ -5,8 +5,14 @@ import { InputPrompt, type InputOpts } from "./handlers/input.ts";
 import { NumberPrompt, type NumberOpts } from "./handlers/number.ts";
 import { ConfirmPrompt, type ConfirmOpts } from "./handlers/confirm.ts";
 import { PasswordPrompt, type PasswordOpts } from "./handlers/password.ts";
+import { EditorPrompt, type EditorOpts } from "./handlers/editor.ts";
 
-type SupportedOpts = InputOpts | NumberOpts | ConfirmOpts | PasswordOpts;
+type SupportedOpts =
+  | InputOpts
+  | NumberOpts
+  | ConfirmOpts
+  | PasswordOpts
+  | EditorOpts;
 
 type PromptResult<O extends SupportedOpts> = O["type"] extends "input"
   ? Result<O extends InputOpts ? O : never, string>
@@ -16,6 +22,8 @@ type PromptResult<O extends SupportedOpts> = O["type"] extends "input"
   ? Result<O extends ConfirmOpts ? O : never, boolean>
   : O["type"] extends "password"
   ? Result<O extends PasswordOpts ? O : never, string>
+  : O["type"] extends "editor"
+  ? Result<O extends EditorOpts ? O : never, string>
   : never;
 
 type PromptResultMap<T extends Array<SupportedOpts>> = {
@@ -176,6 +184,41 @@ export class Ask {
   }
 
   /**
+   * Will open a temporary file in the user's preferred editor and will return
+   * the contents of the file when the editor is closed. You can specify a path
+   * override or an executable name for the editor to use. If not provided, the
+   * `VISUAL` or `EDITOR` environment variables will be used, and if those
+   * aren't present either, a series of common editors will be searched for in
+   * the system `PATH`. You can also provide a custom message to tell the user
+   * to press enter to launch their preferred editor.
+   * @param opts
+   * @example
+   * ```ts
+   * import { Ask } from "@sallai/ask";
+   *
+   * const ask = new Ask();
+   *
+   * const { content } = await ask.editor({
+   *   name: "bio",
+   *   message: "Write a short bio about yourself:",
+   *   editorPath: "nano",
+   *   editorPromptMessage: "Press enter to open the nano editor",
+   * } as const);
+   *
+   * console.log(content);
+   */
+  editor<T extends EditorOpts>(
+    opts: Omit<T, "type">
+  ): Promise<Result<T, string | undefined>> {
+    return new EditorPrompt(
+      this.mergeOptions({
+        ...opts,
+        type: "editor",
+      }) as T
+    ).run();
+  }
+
+  /**
    * Will ask a series of questions based on an array of prompt options and
    * return a type-safe object where each key is the name of a question and the
    * value is the user's input for that question (the type of the value will be
@@ -240,6 +283,11 @@ export class Ask {
         case "password": {
           const password = new PasswordPrompt(question);
           Object.assign(answers, await password.run());
+          break;
+        }
+        case "editor": {
+          const editor = new EditorPrompt(question as EditorOpts);
+          Object.assign(answers, await editor.run());
           break;
         }
       }
