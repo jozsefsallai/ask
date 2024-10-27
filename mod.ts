@@ -8,10 +8,13 @@
 export * from "./lib/ask.ts";
 
 export * from "./lib/core/base.ts";
+export * from "./lib/core/list.ts";
 export * from "./lib/core/result.ts";
 export * from "./lib/core/text.ts";
 
 export * from "./lib/handlers/confirm.ts";
+export * from "./lib/handlers/editor.ts";
 export * from "./lib/handlers/input.ts";
 export * from "./lib/handlers/number.ts";
 export * from "./lib/handlers/password.ts";
+export * from "./lib/handlers/select.ts";

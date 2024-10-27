@@ -1,6 +1,7 @@
-import { Prompt, type PromptOpts } from "./base.ts";
 import iro, { red } from "@sallai/iro";
-import { readLine } from "./utils.ts";
+
+import { Prompt, type PromptOpts } from "./base.ts";
+import { readLine } from "../internal/text-io.ts";
 
 /**
  * Common options for text prompts.

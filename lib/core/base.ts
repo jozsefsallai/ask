@@ -4,7 +4,13 @@ import iro, { bold, green } from "@sallai/iro";
 /**
  * The type of prompt that will be displayed to the user.
  */
-export type PromptType = "input" | "number" | "confirm" | "password" | "editor";
+export type PromptType =
+  | "input"
+  | "number"
+  | "confirm"
+  | "password"
+  | "editor"
+  | "select";
 
 /**
  * The global options that can be passed to an `Ask` instance.

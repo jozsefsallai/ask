@@ -6,13 +6,16 @@ import { NumberPrompt, type NumberOpts } from "./handlers/number.ts";
 import { ConfirmPrompt, type ConfirmOpts } from "./handlers/confirm.ts";
 import { PasswordPrompt, type PasswordOpts } from "./handlers/password.ts";
 import { EditorPrompt, type EditorOpts } from "./handlers/editor.ts";
+import type { SelectOpts } from "./handlers/select.ts";
+import { SelectPrompt } from "../mod.ts";
 
 type SupportedOpts =
   | InputOpts
   | NumberOpts
   | ConfirmOpts
   | PasswordOpts
-  | EditorOpts;
+  | EditorOpts
+  | SelectOpts;
 
 type PromptResult<O extends SupportedOpts> = O["type"] extends "input"
   ? Result<O extends InputOpts ? O : never, string>
@@ -24,6 +27,8 @@ type PromptResult<O extends SupportedOpts> = O["type"] extends "input"
   ? Result<O extends PasswordOpts ? O : never, string>
   : O["type"] extends "editor"
   ? Result<O extends EditorOpts ? O : never, string>
+  : O["type"] extends "select"
+  ? Result<O extends SelectOpts ? O : never, string>
   : never;
 
 type PromptResultMap<T extends Array<SupportedOpts>> = {
@@ -192,11 +197,45 @@ export class Ask {
   }
 
   /**
+   * Will display a list of choices to the user. The user can select one of the
+   * choices by using the `up` and `down` arrow keys. The user can confirm their
+   * selection by pressing the `enter` key. The selected choice will be returned
+   * as an object. You can also provide a function that can override the way the
+   * choices are displayed based on their status (active, inactive, disabled).
+   * You can also use the `Separator` class to add a separator between choices.
+   * @param opts
+   * @example
+   * ```ts
+   * import { Ask, Separator } from "@sallai/ask";
+   *
+   * const ask = new Ask();
+   *
+   * const { topping } = await ask.select({
+   *   name: "topping",
+   *   message: "Select a pizza topping:",
+   *   choices: [
+   *     { message: "Pepperoni", value: "pepperoni" },
+   *     { message: "Mushrooms", value: "mushrooms" },
+   *     new Separator(),
+   *     { message: "Pineapple", value: "pineapple" },
+   *  ],
+   * } as const);
+   *
+   * console.log(topping);
+   * ```
+   */
+  select<T extends SelectOpts<TT>, TT extends string>(
+    opts: T
+  ): Promise<Result<T, string | undefined>> {
+    return new SelectPrompt(this.mergeOptions(opts) as T).run();
+  }
+
+  /**
    * Will ask a series of questions based on an array of prompt options and
    * return a type-safe object where each key is the name of a question and the
    * value is the user's input for that question (the type of the value will be
-   * inferred based on the type of the question). This method is useful when you
-   * want to ask multiple questions at once.
+   * inferred based on the type of the question).
+   * **For most use cases, it's recommended to use the individual methods.**
    * @param questions
    * @example
    * ```ts
@@ -261,6 +300,11 @@ export class Ask {
         case "editor": {
           const editor = new EditorPrompt(question as EditorOpts);
           Object.assign(answers, await editor.run());
+          break;
+        }
+        case "select": {
+          const select = new SelectPrompt(question as SelectOpts);
+          Object.assign(answers, await select.run());
           break;
         }
       }
