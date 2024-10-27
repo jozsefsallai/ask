@@ -69,7 +69,28 @@ export type PromptOpts<RetType> = {
    * @returns `true` if the value is valid, `false` otherwise.
    */
   validate?: <U extends RetType>(val?: U) => boolean | Promise<boolean>;
+
+  /**
+   * The maximum number of times the program will ask the user for input if it
+   * doesn't pass validation. After this number is exceeded, the program will
+   * call the `onExceededAttempts` function.
+   */
+  maxAttempts?: number;
+
+  /**
+   * The function that will be called when the maximum number of attempts is
+   * exceeded.
+   * @param lastInput The last invalid input of the user.
+   */
+  onExceededAttempts?: <U extends RetType>(
+    lastInput?: U,
+    retryFn?: () => Promise<U | undefined>
+  ) => void | Promise<void>;
 } & GlobalPromptOpts;
+
+function onExceededAttempts() {
+  throw new Error("Maximum attempts exceeded.");
+}
 
 /**
  * The base class for all prompt types. This class contains the common logic
@@ -85,6 +106,11 @@ export class Prompt<T> {
   protected input: Reader & ReaderSync & Closer;
   protected output: Writer & WriterSync & Closer;
   protected validate: (val?: T | undefined) => boolean | Promise<boolean>;
+  protected maxAttempts?: number;
+  protected onExceededAttempts?: (
+    lastInput?: T,
+    retryFn?: () => Promise<T | undefined>
+  ) => void | Promise<void>;
 
   constructor(opts: PromptOpts<T>) {
     this.name = opts.name;
@@ -97,6 +123,8 @@ export class Prompt<T> {
     this.input = opts.input ?? Deno.stdin;
     this.output = opts.output ?? Deno.stdout;
     this.validate = opts.validate ?? (() => true);
+    this.maxAttempts = opts.maxAttempts;
+    this.onExceededAttempts = opts.onExceededAttempts ?? onExceededAttempts;
   }
 
   private format(str: string): string {

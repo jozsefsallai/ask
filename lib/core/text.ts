@@ -17,6 +17,8 @@ export class TextPrompt<T = string> extends Prompt<T> {
   private hidden?: boolean;
   private mask?: string;
 
+  private _attempts: number = 0;
+
   constructor(opts: TextOpts<T>) {
     super(opts);
     this.hidden = opts.hidden;
@@ -83,6 +85,20 @@ export class TextPrompt<T = string> extends Prompt<T> {
     }
 
     if (!pass) {
+      if (typeof this.maxAttempts === "number") {
+        this._attempts++;
+
+        if (this._attempts >= this.maxAttempts) {
+          // deno-lint-ignore no-explicit-any
+          await this.onExceededAttempts?.(preprocessedAnswer as any, () => {
+            // deno-lint-ignore no-explicit-any
+            return this.askUntilValid(preprocess) as any;
+          });
+
+          return;
+        }
+      }
+
       return this.askUntilValid(preprocess);
     }
 
