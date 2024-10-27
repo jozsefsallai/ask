@@ -22,17 +22,56 @@ export type Choice = {
   disabled?: boolean;
 };
 
+/**
+ * A single item in a list.
+ */
 export class ListItem {
+  /**
+   * The text that will be displayed as the item in the terminal UI.
+   */
   message: string;
+
+  /**
+   * Whether the item is disabled.
+   */
   disabled: boolean;
+
+  /**
+   * Whether the item is selected.
+   */
   selected: boolean;
+
+  /**
+   * Whether the item is active. An active item is the one where the cursor is
+   * currently located.
+   */
   active: boolean;
 
+  /**
+   * The prefix that will be displayed in front of the message when the item is
+   * selected.
+   */
   selectedPrefix: string = "";
+
+  /**
+   * The prefix that will be displayed in front of the message when the item is
+   * not selected.
+   */
   unselectedPrefix: string = "";
 
+  /**
+   * A function that formats the message when the item is inactive.
+   */
   inactiveFormatter: (message: string) => string;
+
+  /**
+   * A function that formats the message when the item is active.
+   */
   activeFormatter: (message: string) => string;
+
+  /**
+   * A function that formats the message when the item is disabled.
+   */
   disabledFormatter: (message: string) => string;
 
   constructor({
@@ -73,6 +112,10 @@ export class ListItem {
     }
   }
 
+  /**
+   * The full message is the message with the selected/unselected prefix at the
+   * beginning of the string.
+   */
   get fullMessage(): string {
     const prefix = this.selected ? this.selectedPrefix : this.unselectedPrefix;
     return prefix + this.message;
@@ -90,7 +133,10 @@ export class ListItem {
     return iro(`- ${message} (disabled)`, gray);
   }
 
-  format() {
+  /**
+   * Will build the format string of the item based on its state.
+   */
+  format(): string {
     if (this.disabled) {
       return this.disabledFormatter(this.fullMessage);
     }
