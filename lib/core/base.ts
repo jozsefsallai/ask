@@ -48,7 +48,7 @@ export type PromptOpts<RetType> = {
    * The type of the prompt. This determines the behavior and the return type of
    * the question's value.
    */
-  type: PromptType;
+  type?: PromptType;
 
   /**
    * The message that will be displayed to the user. If not provided, the `name`

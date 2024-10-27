@@ -11,12 +11,12 @@ export type NumberType = "integer" | "float";
 /**
  * Options for the number prompt.
  */
-export type NumberOpts = {
+export type NumberOpts = PromptOpts<number> & {
   /**
    * The type of the prompt. This can not be changed but will be used to
    * determine the type of the question.
    */
-  type: "number";
+  type?: "number";
 
   /**
    * The minimum value that can be entered. Defaults to negative infinity.
@@ -33,7 +33,7 @@ export type NumberOpts = {
    * will be parsed as an integer or as a float. Defaults to "integer".
    */
   numberType?: NumberType;
-} & PromptOpts<number>;
+};
 
 /**
  * A prompt for a number input.
@@ -45,6 +45,7 @@ export class NumberPrompt<T extends NumberOpts> extends TextPrompt<number> {
 
   constructor(opts: T) {
     super(opts);
+    this.type = "number";
 
     this.min = opts.min === void 1 ? -Infinity : opts.min;
     this.max = opts.max === void 1 ? Infinity : opts.max;

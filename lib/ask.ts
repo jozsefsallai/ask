@@ -52,7 +52,7 @@ export class Ask {
     this.opts = opts ?? {};
   }
 
-  private mergeOptions<T>(opts: SupportedOpts): T {
+  private mergeOptions<T>(opts: Omit<SupportedOpts, "type">): T {
     return { ...this.opts, ...opts } as T;
   }
 
@@ -74,15 +74,8 @@ export class Ask {
    *
    * console.log(name);
    */
-  input<T extends InputOpts>(
-    opts: Omit<T, "type">
-  ): Promise<Result<T, string | undefined>> {
-    return new InputPrompt(
-      this.mergeOptions({
-        ...opts,
-        type: "input",
-      }) as T
-    ).run();
+  input<T extends InputOpts>(opts: T): Promise<Result<T, string | undefined>> {
+    return new InputPrompt(this.mergeOptions(opts) as T).run();
   }
 
   /**
@@ -108,14 +101,9 @@ export class Ask {
    * console.log(age);
    */
   number<T extends NumberOpts>(
-    opts: Omit<T, "type">
+    opts: T
   ): Promise<Result<T, number | undefined>> {
-    return new NumberPrompt(
-      this.mergeOptions({
-        ...opts,
-        type: "number",
-      }) as T
-    ).run();
+    return new NumberPrompt(this.mergeOptions(opts) as T).run();
   }
 
   /**
@@ -140,14 +128,9 @@ export class Ask {
    * console.log(canDrive);
    */
   confirm<T extends ConfirmOpts>(
-    opts: Omit<T, "type">
+    opts: T
   ): Promise<Result<T, boolean | undefined>> {
-    return new ConfirmPrompt(
-      this.mergeOptions({
-        ...opts,
-        type: "confirm",
-      }) as T
-    ).run();
+    return new ConfirmPrompt(this.mergeOptions(opts) as T).run();
   }
 
   /**
@@ -173,14 +156,9 @@ export class Ask {
    * console.log(password);
    */
   password<T extends PasswordOpts>(
-    opts: Omit<T, "type">
+    opts: T
   ): Promise<Result<T, string | undefined>> {
-    return new PasswordPrompt(
-      this.mergeOptions({
-        ...opts,
-        type: "password",
-      }) as T
-    ).run();
+    return new PasswordPrompt(this.mergeOptions(opts) as T).run();
   }
 
   /**
@@ -208,14 +186,9 @@ export class Ask {
    * console.log(content);
    */
   editor<T extends EditorOpts>(
-    opts: Omit<T, "type">
+    opts: T
   ): Promise<Result<T, string | undefined>> {
-    return new EditorPrompt(
-      this.mergeOptions({
-        ...opts,
-        type: "editor",
-      }) as T
-    ).run();
+    return new EditorPrompt(this.mergeOptions(opts) as T).run();
   }
 
   /**

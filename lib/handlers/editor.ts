@@ -6,7 +6,13 @@ import { getPreferredEditor, unIro } from "../core/utils.ts";
 /**
  * Options for the editor prompt.
  */
-export type EditorOpts = {
+export type EditorOpts = PromptOpts<string> & {
+  /**
+   * The type of the prompt. This can not be changed but will be used to
+   * determine the type of the question.
+   */
+  type?: "editor";
+
   /**
    * A path override or executable name for the editor to use. If not provided,
    * the `VISUAL` or `EDITOR` environment variables will be used, and if those
@@ -20,7 +26,7 @@ export type EditorOpts = {
    * editor. If not provided, a default message will be used.
    */
   editorPromptMessage?: string;
-} & PromptOpts<string>;
+};
 
 /**
  * A prompt that will open a temporary file in the user's preferred editor and
@@ -34,6 +40,8 @@ export class EditorPrompt<T extends EditorOpts> extends Prompt<
 
   constructor(opts: T) {
     super(opts);
+    this.type = "editor";
+
     this.editorPathOverride = opts.editorPath;
     this.editorPromptMessage = opts.editorPromptMessage;
   }

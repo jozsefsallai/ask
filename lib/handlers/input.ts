@@ -5,7 +5,13 @@ import { TextPrompt } from "../core/text.ts";
 /**
  * Options for the input prompt.
  */
-export type InputOpts = PromptOpts<string>;
+export type InputOpts = PromptOpts<string> & {
+  /**
+   * The type of the prompt. This can not be changed but will be used to
+   * determine the type of the question.
+   */
+  type?: "input";
+};
 
 /**
  * A prompt for a simple text input.
@@ -13,6 +19,7 @@ export type InputOpts = PromptOpts<string>;
 export class InputPrompt<T extends InputOpts> extends TextPrompt {
   constructor(opts: T) {
     super(opts);
+    this.type = "input";
   }
 
   /**

@@ -5,13 +5,19 @@ import { TextPrompt } from "../core/text.ts";
 /**
  * Options for the password prompt.
  */
-export type PasswordOpts = {
+export type PasswordOpts = PromptOpts<string> & {
+  /**
+   * The type of the prompt. This can not be changed but will be used to
+   * determine the type of the question.
+   */
+  type?: "password";
+
   /**
    * An optional mask character to hide the input. If not provided, the input
    * will be hidden entirely. Only the first character of the mask will be used.
    */
   mask?: string;
-} & PromptOpts<string>;
+};
 
 /**
  * A prompt for a password input.
@@ -23,6 +29,7 @@ export class PasswordPrompt<T extends PasswordOpts> extends TextPrompt {
       hidden: !opts.mask,
       mask: opts.mask?.charAt(0),
     });
+    this.type = "password";
   }
 
   /**
