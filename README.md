@@ -2,6 +2,8 @@
 
 Interactive command-line prompts for Deno.
 
+![Demo](.github/assets/demo.gif)
+
 ## Description
 
 `ask` is a slick Deno module that allows you to create interactive command-line
@@ -16,6 +18,8 @@ applications, similar to what you'd achieve with
   - `password` (hidden/masked input)
   - `confirm` (yes/no)
   - `editor` (open an editor to write longer text)
+  - `select` (pick one item from a list)
+  - `checkbox` (pick multiple items from a list)
 - Elegant output.
 - Familiar, inquirer-like syntax.
 - Easily configurable.
